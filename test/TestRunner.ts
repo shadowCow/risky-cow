@@ -20,7 +20,7 @@ export function createTestRunner<Action, Validation>(
     run(useCases: Array<UseCase<Action, Validation>>) {
       useCases.forEach((useCase) => {
         try {
-          useCase.Given();
+          useCase.Given.forEach((action) => userActionExecutor(action));
 
           userActionExecutor(useCase.When);
 

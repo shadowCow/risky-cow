@@ -1,6 +1,6 @@
 export type UseCase<Action, Validation> = {
   description: string;
-  Given(): void;
+  Given: Array<Action>;
   When: Action;
   Then: Array<Validation>;
 };
