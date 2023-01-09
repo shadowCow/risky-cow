@@ -114,11 +114,14 @@ function startGame(
     const gameId = idGenerator();
     const player1 = playerRepo.getPlayerById(player1Id);
     const player2 = playerRepo.getPlayerById(player2Id);
-    const game = createGameState(gameId, player1, player2);
 
-    state.games[gameId] = game;
+    if (player1 && player2) {
+      const game = createGameState(gameId, player1, player2);
 
-    return [createGameStarted(player1Id, player2Id)];
+      state.games[gameId] = game;
+
+      return [createGameStarted(player1Id, player2Id)];
+    }
   }
 
   return [];
@@ -136,7 +139,11 @@ export function createGameRoomFst(
     onInput(i) {
       switch (i.kind) {
         case "QueueForGame":
-          return [];
+          if (state.playerIdQueue.length < 1) {
+            return enqueuePlayer(state, i.playerId);
+          } else {
+            return [];
+          }
         case "LeaveQueue":
           return [];
         case "MakeMove":

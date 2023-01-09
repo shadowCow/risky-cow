@@ -9,3 +9,6 @@ node_modules
 
 # IDE files
 *.code-workspace
+
+# misc personal stuff
+my_notes.md
