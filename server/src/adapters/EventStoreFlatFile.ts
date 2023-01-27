@@ -1,4 +1,4 @@
-import { EventStore } from "../../server/src/app/ports/EventStore";
+import { EventStore } from "../app/ports/EventStore";
 
 export function createEventStoreFlatFile<E>(filePath: string): EventStore<E> {
   return {
