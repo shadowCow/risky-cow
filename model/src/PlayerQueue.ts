@@ -5,6 +5,11 @@ export type State = {
     [id: string]: Player;
   };
 };
+export function createPlayerQueueState(): State {
+  return {
+    playersById: {},
+  };
+}
 
 export type Event = PlayerJoinedQueue | PlayerLeftQueue | MatchMade;
 
@@ -50,4 +55,8 @@ function removePlayersById(state: State, ids: Array<string>): State {
     ...state,
     playersById: updatedPlayers,
   };
+}
+
+export function getQueueLength(state: State): number {
+  return Object.keys(state.playersById).length;
 }
