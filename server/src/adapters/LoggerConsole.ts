@@ -1,4 +1,4 @@
-import { Logger } from "./Logger";
+import { Logger } from "../app/ports/Logger";
 
 export function createLoggerConsole(): Logger {
   return {

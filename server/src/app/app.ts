@@ -1,16 +1,16 @@
-import { EventStore, hydrate } from "../../model/src/EventStore";
-import { Logger } from "../../model/src/Logger";
-import { MatchmakingAlgorithm } from "../../model/src/MatchmakingAlgorithm";
+import { EventStore, hydrate } from "./ports/EventStore";
+import { Logger } from "./ports/Logger";
+import { MatchmakingAlgorithm } from "./ports/MatchmakingAlgorithm";
 import {
   createMatchmakingService,
   MatchmakingService,
-} from "../../model/src/MatchmakingService";
-import { PlayerRepo } from "../../model/src/PlayerRepo";
+} from "./services/MatchmakingService";
+import { PlayerRepo } from "./ports/PlayerRepo";
 import {
   createPlayerQueueState,
   Event as PlayerQueueEvent,
   apply as PlayerQueueApply,
-} from "../../model/src/PlayerQueue";
+} from "./model/PlayerQueue";
 
 export type App = {
   matchmakingService: MatchmakingService;
@@ -20,7 +20,8 @@ export async function createApp(
   logger: Logger,
   matchmaker: MatchmakingAlgorithm,
   playerRepo: PlayerRepo,
-  playerQueueEventStore: EventStore<PlayerQueueEvent>
+  playerQueueEventStore: EventStore<PlayerQueueEvent>,
+  eventPublisher: (e: PlayerQueueEvent) => void
 ): Promise<App> {
   const defaultPlayerQueue = createPlayerQueueState();
 
@@ -38,7 +39,8 @@ export async function createApp(
   const matchmakingService = createMatchmakingService(
     playerRepo,
     playerQueue,
-    matchmaker
+    matchmaker,
+    eventPublisher
   );
 
   return {

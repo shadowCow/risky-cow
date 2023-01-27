@@ -1,6 +1,6 @@
 import { createGameRoomFst } from "../model/src/GameRoom";
-import { PlayerRepo } from "../model/src/PlayerRepo";
-import { createPlayerRepoInMemory } from "../model/src/PlayerRepoInMemory";
+import { PlayerRepo } from "../server/src/app/ports/PlayerRepo";
+import { createPlayerRepoInMemory } from "../server/src/adapters/PlayerRepoInMemory";
 import { createAppUseCases } from "./app/AppUseCases";
 import { createFstSut } from "./app/FstSut";
 import { createAppActionExecutor } from "./app/impl/AppActionExecutor";

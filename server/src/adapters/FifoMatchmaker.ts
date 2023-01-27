@@ -1,4 +1,4 @@
-import { MatchmakingAlgorithm } from "./MatchmakingAlgorithm";
+import { MatchmakingAlgorithm } from "../app/ports/MatchmakingAlgorithm";
 
 export function createFifoMatchmaker(): MatchmakingAlgorithm {
   return (state) => {

@@ -1,6 +1,9 @@
-import { MatchmakingAlgorithm } from "./MatchmakingAlgorithm";
-import { State as PlayerQueueState } from "./PlayerQueue";
-import { PlayerRepo } from "./PlayerRepo";
+import { MatchmakingAlgorithm } from "../ports/MatchmakingAlgorithm";
+import {
+  Event as PlayerQueueEvent,
+  State as PlayerQueueState,
+} from "../model/PlayerQueue";
+import { PlayerRepo } from "../ports/PlayerRepo";
 
 export type MatchmakingService = {
   onCommand: (command: Command) => void;
@@ -20,7 +23,8 @@ export type LeaveQueueRequest = {
 export function createMatchmakingService(
   playerRepo: PlayerRepo,
   playerQueue: PlayerQueueState,
-  matchmaker: MatchmakingAlgorithm
+  matchmaker: MatchmakingAlgorithm,
+  eventPublisher: (e: PlayerQueueEvent) => void
 ): MatchmakingService {
   return {
     onCommand(command) {
