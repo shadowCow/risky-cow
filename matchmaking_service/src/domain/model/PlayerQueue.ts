@@ -17,14 +17,39 @@ export type PlayerJoinedQueue = {
   kind: 'PlayerJoinedQueue'
   player: Player
 }
+export function playerJoinedQueue(player: Player): PlayerJoinedQueue {
+  return {
+    kind: 'PlayerJoinedQueue',
+    player,
+  }
+}
 export type PlayerLeftQueue = {
   kind: 'PlayerLeftQueue'
   playerId: string
 }
+export function playerLeftQueue(playerId: string): PlayerLeftQueue {
+  return {
+    kind: 'PlayerLeftQueue',
+    playerId,
+  }
+}
 export type MatchMade = {
   kind: 'MatchMade'
+  matchId: string
   player1Id: string
   player2Id: string
+}
+export function matchMade(
+  matchId: string,
+  player1Id: string,
+  player2Id: string,
+): MatchMade {
+  return {
+    kind: 'MatchMade',
+    matchId,
+    player1Id,
+    player2Id,
+  }
 }
 
 export function apply(state: State, event: Event): State {
