@@ -1,10 +1,10 @@
 import { GameRoomFst } from "../../../model/src/GameRoom";
-import { ActionExecutor } from "../../ActionExecutor";
+import { CommandExecutor } from "../../CommandExecutor";
 import { Action } from "../Actions";
 
 export function createAppActionExecutor(
   gameRoomFst: GameRoomFst
-): ActionExecutor<Action> {
+): CommandExecutor<Action> {
   return (action) => {
     switch (action.kind) {
       case "JoinRandomGame":

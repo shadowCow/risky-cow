@@ -1,4 +1,4 @@
-import { EventStore, hydrate } from "./ports/EventStore";
+import { EventStore } from "./ports/EventStore";
 import { Logger } from "./ports/Logger";
 import { MatchmakingAlgorithm } from "./ports/MatchmakingAlgorithm";
 import {
@@ -6,15 +6,7 @@ import {
   MatchmakingService,
 } from "./services/MatchmakingService";
 import { PlayerRepo } from "./ports/PlayerRepo";
-import {
-  createPlayerQueueState,
-  Event as PlayerQueueEvent,
-  apply as PlayerQueueApply,
-} from "./model/PlayerQueue";
-
-export type App = {
-  matchmakingService: MatchmakingService;
-};
+import { Event as PlayerQueueEvent } from "./model/PlayerQueue";
 
 export async function createApp(
   logger: Logger,
@@ -22,30 +14,20 @@ export async function createApp(
   playerRepo: PlayerRepo,
   playerQueueEventStore: EventStore<PlayerQueueEvent>,
   eventPublisher: (e: PlayerQueueEvent) => void
-): Promise<App> {
-  const defaultPlayerQueue = createPlayerQueueState();
-
+): Promise<MatchmakingService> {
   const persistedEvents = await loadPersistedEvents(
     playerQueueEventStore,
     logger
   );
 
-  const playerQueue = hydrate(
-    defaultPlayerQueue,
-    PlayerQueueApply,
-    persistedEvents
-  );
-
   const matchmakingService = createMatchmakingService(
     playerRepo,
-    playerQueue,
+    persistedEvents,
     matchmaker,
     eventPublisher
   );
 
-  return {
-    matchmakingService,
-  };
+  return matchmakingService;
 }
 
 async function loadPersistedEvents(

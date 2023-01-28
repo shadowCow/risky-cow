@@ -1,6 +1,15 @@
-export type UseCase<Action, Validation> = {
+export type UseCase<Event, Command, Validation> = {
   description: string;
-  Given: Array<Action>;
-  When: Action;
+  /**
+   * Event history that defines the system start state
+   */
+  Given: Array<Event>;
+  /**
+   * Ask the system to do something
+   */
+  When: Command;
+  /**
+   * Verify the result of the operation
+   */
   Then: Array<Validation>;
 };

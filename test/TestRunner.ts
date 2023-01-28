@@ -1,4 +1,4 @@
-import { ActionExecutor } from "./ActionExecutor";
+import { CommandExecutor } from "./CommandExecutor";
 import {
   createFailResult,
   createPassResult,
@@ -7,22 +7,23 @@ import {
 import { UseCase } from "./use_cases/UseCase";
 import { ValidationExecutor } from "./ValidationExecutor";
 
-export type TestRunner<Action, Validation> = {
-  run(useCases: Array<UseCase<Action, Validation>>): void;
+export type TestRunner<Event, Command, Validation> = {
+  run(useCases: Array<UseCase<Event, Command, Validation>>): void;
 };
 
-export function createTestRunner<Action, Validation>(
+export function createTestRunner<Event, Command, Validation>(
   reporter: TestReporter,
-  userActionExecutor: ActionExecutor<Action>,
+  appFactory: (eventLog: Array<Event>) => (command: Command) => void,
+  userCommandExecutor: CommandExecutor<Command>,
   stateValidationExecutor: ValidationExecutor<Validation>
-): TestRunner<Action, Validation> {
+): TestRunner<Event, Command, Validation> {
   return {
-    run(useCases: Array<UseCase<Action, Validation>>) {
+    run(useCases: Array<UseCase<Event, Command, Validation>>) {
       useCases.forEach((useCase) => {
         try {
-          useCase.Given.forEach((action) => userActionExecutor(action));
+          const app = appFactory(useCase.Given);
 
-          userActionExecutor(useCase.When);
+          userCommandExecutor(useCase.When);
 
           useCase.Then.forEach((validation) =>
             stateValidationExecutor(validation)
