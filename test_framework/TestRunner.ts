@@ -13,20 +13,21 @@ export type TestRunner<Event, Command, Validation> = {
 
 export function createTestRunner<Event, Command, Validation>(
   reporter: TestReporter,
-  appFactory: (eventLog: Array<Event>) => (command: Command) => void,
-  userCommandExecutor: CommandExecutor<Command>,
-  stateValidationExecutor: ValidationExecutor<Validation>,
+  fixtureFactory: (eventLog: Array<Event>) => {
+    commandExecutor: CommandExecutor<Command>
+    validationExecutor: ValidationExecutor<Validation>
+  },
 ): TestRunner<Event, Command, Validation> {
   return {
     run(useCases: Array<UseCase<Event, Command, Validation>>) {
       useCases.forEach((useCase) => {
         try {
-          const app = appFactory(useCase.Given)
+          const fixture = fixtureFactory(useCase.Given)
 
-          userCommandExecutor(useCase.When)
+          fixture.commandExecutor(useCase.When)
 
           useCase.Then.forEach((validation) =>
-            stateValidationExecutor(validation),
+            fixture.validationExecutor(validation),
           )
 
           reporter.report(createPassResult(useCase.description))
