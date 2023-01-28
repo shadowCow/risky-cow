@@ -1,12 +1,12 @@
-import { MatchmakingAlgorithm } from "../ports/MatchmakingAlgorithm";
+import { MatchmakingAlgorithm } from "./ports/MatchmakingAlgorithm";
 import {
   Event as PlayerQueueEvent,
   State as PlayerQueueState,
   apply as PlayerQueueApply,
   createPlayerQueueState,
-} from "../model/PlayerQueue";
-import { PlayerRepo } from "../ports/PlayerRepo";
-import { hydrate } from "../ports/EventStore";
+} from "./model/PlayerQueue";
+import { PlayerRepo } from "./ports/PlayerRepo";
+import { hydrate } from "./ports/EventStore";
 
 export type MatchmakingService = {
   onCommand: (command: Command) => void;

@@ -1,4 +1,4 @@
-import { PlayerRepo } from "../app/ports/PlayerRepo";
+import { PlayerRepo } from "../domain/ports/PlayerRepo";
 
 export function createPlayerRepoInMemory(): PlayerRepo {
   return {

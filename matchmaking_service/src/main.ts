@@ -1,9 +1,11 @@
 import { createEventStoreInMemory } from "./adapters/EventStoreInMemory";
 import { createFifoMatchmaker } from "./adapters/FifoMatchmaker";
 import { createLoggerConsole } from "./adapters/LoggerConsole";
-import { Event as PlayerQueueEvent } from "./app/model/PlayerQueue";
+import { Event as PlayerQueueEvent } from "./domain/model/PlayerQueue";
 import { createPlayerRepoInMemory } from "./adapters/PlayerRepoInMemory";
-import { createApp } from "./app/app";
+import { createMatchmakingService } from "./domain/MatchmakingService";
+import { EventStore } from "./domain/ports/EventStore";
+import { Logger } from "./domain/ports/Logger";
 
 const logger = createLoggerConsole();
 const matchmaker = createFifoMatchmaker();
@@ -12,13 +14,31 @@ const playerQueueEventStore = createEventStoreInMemory<PlayerQueueEvent>();
 const eventPublisher = (event: PlayerQueueEvent) => {};
 
 async function start() {
-  const app = await createApp(
-    logger,
-    matchmaker,
-    playerRepo,
+  const persistedEvents = await loadPersistedEvents(
     playerQueueEventStore,
+    logger
+  );
+
+  const matchmakingService = createMatchmakingService(
+    playerRepo,
+    persistedEvents,
+    matchmaker,
     eventPublisher
   );
+}
+
+async function loadPersistedEvents(
+  playerQueueEventStore: EventStore<PlayerQueueEvent>,
+  logger: Logger
+): Promise<Array<PlayerQueueEvent>> {
+  let events: Array<PlayerQueueEvent> = [];
+  try {
+    events = await playerQueueEventStore.readAll();
+  } catch (err) {
+    logger.log(err);
+  }
+
+  return events;
 }
 
 start()

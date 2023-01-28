@@ -1,4 +1,4 @@
-import { EventStore } from "../app/ports/EventStore";
+import { EventStore } from "../domain/ports/EventStore";
 
 export function createEventStoreInMemory<E>(): EventStore<E> {
   const eventLog: Array<E> = [];

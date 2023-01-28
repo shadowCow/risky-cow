@@ -1,5 +1,5 @@
 import { createGameRoomFst } from "../model/src/GameRoom";
-import { PlayerRepo } from "../matchmaking_service/src/app/ports/PlayerRepo";
+import { PlayerRepo } from "../matchmaking_service/src/domain/ports/PlayerRepo";
 import { createPlayerRepoInMemory } from "../matchmaking_service/src/adapters/PlayerRepoInMemory";
 import { createAppUseCases } from "./app/AppUseCases";
 import { createFstSut } from "./app/FstSut";
