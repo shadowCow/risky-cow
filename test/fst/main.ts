@@ -1,5 +1,5 @@
 import { createGameRoomFst } from "../../model/src/GameRoom";
-import { createPlayerRepoInMemory } from "../../matchmaking_service/server/src/adapters/PlayerRepoInMemory";
+import { createPlayerRepoInMemory } from "../../matchmaking_service/src/adapters/PlayerRepoInMemory";
 import { createConsoleReporter } from "../reporter/ConsoleReporter";
 import { createFstTestRunner } from "./FstTest";
 
