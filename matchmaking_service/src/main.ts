@@ -1,5 +1,5 @@
 import { createEventStoreInMemory } from './adapters/EventStoreInMemory'
-import { createFifoMatchmaker } from './adapters/FifoMatchmaker'
+import { createMatchmakerFifo } from './adapters/MatchmakerFifo'
 import { createLoggerConsole } from './adapters/LoggerConsole'
 import { Event as PlayerQueueEvent } from './domain/model/PlayerQueue'
 import { createPlayerRepoInMemory } from './adapters/PlayerRepoInMemory'
@@ -8,7 +8,7 @@ import { EventStore } from './domain/ports/EventStore'
 import { Logger } from './domain/ports/Logger'
 
 const logger = createLoggerConsole()
-const matchmaker = createFifoMatchmaker()
+const matchmaker = createMatchmakerFifo()
 const playerRepo = createPlayerRepoInMemory()
 const playerQueueEventStore = createEventStoreInMemory<PlayerQueueEvent>()
 const eventPublisher = (event: PlayerQueueEvent) => {}
@@ -23,7 +23,6 @@ async function start() {
     playerRepo,
     persistedEvents,
     matchmaker,
-    eventPublisher,
   )
 }
 

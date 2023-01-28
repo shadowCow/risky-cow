@@ -1,6 +1,6 @@
 import { MatchmakingAlgorithm } from '../domain/ports/MatchmakingAlgorithm'
 
-export function createFifoMatchmaker(): MatchmakingAlgorithm {
+export function createMatchmakerFifo(): MatchmakingAlgorithm {
   return (state) => {
     const allPlayerIds = Object.keys(state.playersById)
 

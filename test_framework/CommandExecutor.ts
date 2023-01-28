@@ -1,1 +1,1 @@
-export type CommandExecutor<Command> = (command: Command) => void
+export type CommandExecutor<Command> = (command: Command) => Promise<void>

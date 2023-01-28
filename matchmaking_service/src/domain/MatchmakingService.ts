@@ -9,25 +9,26 @@ import { PlayerRepo } from './ports/PlayerRepo'
 import { hydrate } from './ports/EventStore'
 
 export type MatchmakingService = {
-  onCommand: (command: Command) => void
+  onCommand: (command: Command) => Promise<CommandResult>
 }
 
 export type Command = JoinQueueRequest | LeaveQueueRequest
 
 export type JoinQueueRequest = {
   kind: 'JoinQueueRequest'
-  playerId: string
+  getPlayerId: () => string
 }
 export type LeaveQueueRequest = {
   kind: 'LeaveQueueRequest'
-  playerId: string
+  getPlayerId: () => string
 }
+
+export type CommandResult = void
 
 export function createMatchmakingService(
   playerRepo: PlayerRepo,
   eventLog: Array<PlayerQueueEvent>,
   matchmaker: MatchmakingAlgorithm,
-  eventPublisher: (e: PlayerQueueEvent) => void,
 ): MatchmakingService {
   const defaultPlayerQueue = createPlayerQueueState()
 
