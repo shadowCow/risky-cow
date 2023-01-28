@@ -1,16 +1,16 @@
-import { EventStore } from "../domain/ports/EventStore";
+import { EventStore } from '../domain/ports/EventStore'
 
 export function createEventStoreInMemory<E>(): EventStore<E> {
-  const eventLog: Array<E> = [];
+  const eventLog: Array<E> = []
 
   return {
     persist(e) {
-      eventLog.push(e);
+      eventLog.push(e)
 
-      return Promise.resolve();
+      return Promise.resolve()
     },
     readAll() {
-      return Promise.resolve([...eventLog]);
+      return Promise.resolve([...eventLog])
     },
-  };
+  }
 }

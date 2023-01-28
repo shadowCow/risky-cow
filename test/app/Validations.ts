@@ -1,6 +1,6 @@
-export type Validation = PlayerIsInGameQueue;
+export type Validation = PlayerIsInGameQueue
 
 export type PlayerIsInGameQueue = {
-  kind: "PlayerIsInGameQueue";
-  playerId: string;
-};
+  kind: 'PlayerIsInGameQueue'
+  playerId: string
+}

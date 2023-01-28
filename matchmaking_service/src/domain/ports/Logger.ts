@@ -1,3 +1,3 @@
 export type Logger = {
-  log: (msg: string) => void;
-};
+  log: (msg: string) => void
+}

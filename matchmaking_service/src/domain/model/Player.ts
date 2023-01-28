@@ -1,10 +1,10 @@
 export type Player = {
-  id: string;
-  displayName: string;
-  rating: PlayerRating;
-};
+  id: string
+  displayName: string
+  rating: PlayerRating
+}
 
 /**
  * ELO style rating
  */
-export type PlayerRating = number;
+export type PlayerRating = number

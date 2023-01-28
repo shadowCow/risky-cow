@@ -1,1 +1,1 @@
-export type ValidationExecutor<Validation> = (validation: Validation) => void;
+export type ValidationExecutor<Validation> = (validation: Validation) => void

@@ -1,12 +1,12 @@
-import { EventStore } from "../domain/ports/EventStore";
+import { EventStore } from '../domain/ports/EventStore'
 
 export function createEventStoreFlatFile<E>(filePath: string): EventStore<E> {
   return {
     persist(e) {
-      return Promise.reject("not implemented");
+      return Promise.reject('not implemented')
     },
     readAll() {
-      return Promise.reject("not implemented");
+      return Promise.reject('not implemented')
     },
-  };
+  }
 }

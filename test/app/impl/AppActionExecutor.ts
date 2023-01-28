@@ -1,20 +1,20 @@
-import { GameRoomFst } from "../../../model/src/GameRoom";
-import { CommandExecutor } from "../../CommandExecutor";
-import { Action } from "../Actions";
+import { GameRoomFst } from '../../../model/src/GameRoom'
+import { CommandExecutor } from '../../CommandExecutor'
+import { Action } from '../Actions'
 
 export function createAppActionExecutor(
-  gameRoomFst: GameRoomFst
+  gameRoomFst: GameRoomFst,
 ): CommandExecutor<Action> {
   return (action) => {
     switch (action.kind) {
-      case "JoinRandomGame":
+      case 'JoinRandomGame':
         gameRoomFst.onInput({
-          kind: "QueueForGame",
+          kind: 'QueueForGame',
           playerId: action.playerId,
-        });
-        break;
+        })
+        break
       default:
       // const _exhaust: never = action;
     }
-  };
+  }
 }
