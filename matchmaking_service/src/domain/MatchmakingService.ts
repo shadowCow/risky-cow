@@ -24,9 +24,21 @@ export type JoinRandomGameRequest = {
   kind: 'JoinRandomGameRequest'
   getPlayerId: () => string
 }
+export function joinRandomGameRequest(playerId: string): JoinRandomGameRequest {
+  return {
+    kind: 'JoinRandomGameRequest',
+    getPlayerId: () => playerId,
+  }
+}
 export type LeaveQueueRequest = {
   kind: 'LeaveQueueRequest'
   getPlayerId: () => string
+}
+export function leaveQueueRequest(playerId: string): LeaveQueueRequest {
+  return {
+    kind: 'LeaveQueueRequest',
+    getPlayerId: () => playerId,
+  }
 }
 
 export type CommandResult =

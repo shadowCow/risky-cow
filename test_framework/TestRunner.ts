@@ -1,4 +1,3 @@
-import { CommandExecutor } from './CommandExecutor'
 import {
   createFailResult,
   createPassResult,
@@ -6,46 +5,37 @@ import {
   TestResult,
 } from './reporter/Reporter'
 import { UseCase } from './use_cases/UseCase'
-import { ValidationExecutor } from './ValidationExecutor'
+const assert = require('assert')
 
-export type TestRunner<Event, Command, Validation> = {
-  run(useCases: Array<UseCase<Event, Command, Validation>>): Promise<void>
+export type TestRunner<Request, Response> = {
+  run(useCases: Array<UseCase<Request, Response>>): Promise<void>
 }
 
-export function createTestRunner<Event, Command, Validation>(
+export function createTestRunner<Request, Response>(
   reporter: TestReporter,
-  fixtureFactory: FixtureFactory<Event, Command, Validation>,
-): TestRunner<Event, Command, Validation> {
+): TestRunner<Request, Response> {
   return {
-    async run(useCases: Array<UseCase<Event, Command, Validation>>) {
+    async run(useCases: Array<UseCase<Request, Response>>) {
       for (let i = 0; i < useCases.length; i++) {
-        const result = await runUseCase(useCases[i], fixtureFactory)
+        const result = await runUseCase(useCases[i])
         reporter.report(result)
       }
     },
   }
 }
 
-async function runUseCase<E, C, V>(
-  useCase: UseCase<E, C, V>,
-  fixtureFactory: FixtureFactory<E, C, V>,
+async function runUseCase<Request, Response>(
+  useCase: UseCase<Request, Response>,
 ): Promise<TestResult> {
   try {
-    const fixture = fixtureFactory(useCase.Given)
+    const { commandExecutor } = useCase.Given()
 
-    await fixture.commandExecutor(useCase.When)
+    const response = await commandExecutor(useCase.When)
 
-    useCase.Then.forEach((validation) => fixture.validationExecutor(validation))
+    assert.deepStrictEqual(useCase.Then, response)
 
     return createPassResult(useCase.description)
   } catch (ex) {
     return createFailResult(useCase.description, ex)
   }
-}
-
-export type FixtureFactory<Event, Command, Validation> = (
-  eventLog: Array<Event>,
-) => {
-  commandExecutor: CommandExecutor<Command>
-  validationExecutor: ValidationExecutor<Validation>
 }

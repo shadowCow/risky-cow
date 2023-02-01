@@ -1,1 +1,4 @@
-export type ValidationExecutor<Validation> = (validation: Validation) => void
+export type ValidationExecutor<Response> = (
+  expected: Response,
+  actual: Response,
+) => void

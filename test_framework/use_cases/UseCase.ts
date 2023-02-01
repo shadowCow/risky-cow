@@ -1,15 +1,20 @@
-export type UseCase<Event, Command, Validation> = {
+import { CommandExecutor } from '../CommandExecutor'
+import { ValidationExecutor } from '../ValidationExecutor'
+
+export type UseCase<Request, Response> = {
   description: string
   /**
    * Event history that defines the system start state
    */
-  Given: Array<Event>
+  Given: () => {
+    commandExecutor: CommandExecutor<Request, Response>
+  }
   /**
    * Ask the system to do something
    */
-  When: Command
+  When: Request
   /**
-   * Verify the result of the operation
+   * Verify the response of the operation
    */
-  Then: Array<Validation>
+  Then: Response
 }
