@@ -1,5 +1,6 @@
 # compiled output
 dist
+target
 
 # dependencies
 node_modules
