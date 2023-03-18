@@ -1,12 +1,6 @@
-import { EventProcessor } from '../../event/event_processor'
-import { adt } from '../../fp/adt'
+import { adt } from '../fp/adt'
 
-export type MatchmakingService = EventProcessor<
-  MatchmakingServiceInput,
-  MatchmakingServiceOutput
->
-
-export type MatchmakingServiceInput = FindMatch | LeaveMatchmaking
+export type MatchmakerInput = FindMatch | LeaveMatchmaking
 
 export const findMatch = adt<'FindMatch', { playerId: string }>('FindMatch')
 export type FindMatch = ReturnType<typeof findMatch>
@@ -16,9 +10,8 @@ export const leaveMatchmaking = adt<'LeaveMatchmaking', { playerId: string }>(
 )
 export type LeaveMatchmaking = ReturnType<typeof leaveMatchmaking>
 
-export type MatchmakingServiceOutput =
+export type MatchmakerOutput =
   | PlayerInMatchmakingQueue
-  | MatchmakingQueueFull
   | MatchMade
   | LeftMatchmaking
 
@@ -29,11 +22,6 @@ export const playerInMatchmakingQueue = adt<
 export type PlayerInMatchmakingQueue = ReturnType<
   typeof playerInMatchmakingQueue
 >
-
-export const matchmakingQueueFull = adt<'MatchmakingQueueFull', void>(
-  'MatchmakingQueueFull',
-)
-export type MatchmakingQueueFull = ReturnType<typeof matchmakingQueueFull>
 
 export const matchMade = adt<
   'MatchMade',
