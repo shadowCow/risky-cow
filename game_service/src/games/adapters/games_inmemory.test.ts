@@ -9,6 +9,7 @@ import {
   currentGame,
   currentGameNotFound,
   currentGameSuccess,
+  gameAlreadyExists,
   gameCompleted,
   GameHistory,
   Games,
@@ -19,6 +20,7 @@ import {
   makeMoveSuccess,
   moveWasInvalid,
   startGame,
+  startGameFailure,
 } from '../games'
 import { createGamesInMemory } from './games_inmemory'
 
@@ -44,6 +46,17 @@ describe('games inmemory', () => {
         Then: gameStarted({ id: game1Id, player1Id, player2Id }),
       }),
     )
+
+    test(
+      'game failed to start',
+      gamesTest({
+        Given: serviceWithGames,
+        When: startGame({ gameId: game1Id, player1Id, player2Id }),
+        Then: startGameFailure({
+          reason: gameAlreadyExists({ gameId: game1Id }),
+        }),
+      }),
+    )
   })
 
   describe('current game', () => {
@@ -52,7 +65,7 @@ describe('games inmemory', () => {
       gamesTest({
         Given: newService,
         When: currentGame({ playerId: player1Id }),
-        Then: currentGameNotFound(),
+        Then: currentGameNotFound({ playerId: player1Id }),
       }),
     )
 
@@ -71,8 +84,12 @@ describe('games inmemory', () => {
       'for missing game',
       gamesTest({
         Given: newService,
-        When: makeMove({ playerId: player1Id, move: { tile: 0, owner: '1' } }),
-        Then: currentGameNotFound(),
+        When: makeMove({
+          gameId: game1Id,
+          playerId: player1Id,
+          move: { tile: 0, owner: '1' },
+        }),
+        Then: currentGameNotFound({ playerId: player1Id }),
       }),
     )
 
@@ -80,17 +97,47 @@ describe('games inmemory', () => {
       'invalid move',
       gamesTest({
         Given: serviceWithGames,
-        When: makeMove({ playerId: player1Id, move: { tile: 0, owner: '1' } }),
-        Then: moveWasInvalid({ reason: 'oops' }),
+        When: makeMove({
+          gameId: game1Id,
+          playerId: player1Id,
+          move: { tile: 0, owner: '1' },
+        }),
+        Then: moveWasInvalid({ reason: '' }),
       }),
     )
 
     test(
       'valid move',
       gamesTest({
-        Given: newService,
-        When: makeMove({ playerId: player1Id, move: { tile: 0, owner: '1' } }),
-        Then: makeMoveSuccess({ move: { tile: 0, owner: '1' } }),
+        Given: serviceWithGames,
+        When: makeMove({
+          gameId: game1Id,
+          playerId: player1Id,
+          move: { tile: 8, owner: '1' },
+        }),
+        Then: makeMoveSuccess({
+          gameId: game1Id,
+          playerId: player1Id,
+          move: { tile: 8, owner: '1' },
+        }),
+      }),
+    )
+
+    test(
+      'move completes the game',
+      gamesTest({
+        Given: serviceWithGames,
+        When: makeMove({
+          gameId: game1Id,
+          playerId: player1Id,
+          move: { tile: 2, owner: '1' },
+        }),
+        Then: gameCompleted({
+          game: {
+            ...testGame1(),
+            moves: [...testGame1().moves, { tile: 2, owner: '1' }],
+          },
+        }),
       }),
     )
   })
@@ -100,8 +147,8 @@ describe('games inmemory', () => {
       'missing game',
       gamesTest({
         Given: newService,
-        When: concedeGame({ playerId: player1Id }),
-        Then: currentGameNotFound(),
+        When: concedeGame({ gameId: game1Id, playerId: player1Id }),
+        Then: currentGameNotFound({ playerId: player1Id }),
       }),
     )
 
@@ -109,7 +156,7 @@ describe('games inmemory', () => {
       'concede success',
       gamesTest({
         Given: serviceWithGames,
-        When: concedeGame({ playerId: player1Id }),
+        When: concedeGame({ gameId: game1Id, playerId: player1Id }),
         Then: gameCompleted({ game: testGame1() }),
       }),
     )
@@ -132,6 +179,8 @@ function testGame1(): GameHistory<TestMove> {
     moves: [
       { tile: 0, owner: '1' },
       { tile: 3, owner: '2' },
+      { tile: 1, owner: '1' },
+      { tile: 4, owner: '2' },
     ],
   }
 }

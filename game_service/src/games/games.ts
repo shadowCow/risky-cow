@@ -20,6 +20,7 @@ export const MakeMoveKind: 'MakeMove' = 'MakeMove'
 export type MakeMove<M> = {
   kind: typeof MakeMoveKind
   value: {
+    gameId: string
     playerId: string
     move: M
   }
@@ -31,13 +32,15 @@ export function makeMove<M>(value: MakeMove<M>['value']): MakeMove<M> {
   }
 }
 
-export const concedeGame = adt<'ConcedeGame', { playerId: string }>(
+export const concedeGame = adt<
   'ConcedeGame',
-)
+  { gameId: string; playerId: string }
+>('ConcedeGame')
 export type ConcedeGame = ReturnType<typeof concedeGame>
 
 export type GamesOutput<M> =
   | GameStarted
+  | StartGameFailure
   | CurrentGameSuccess<M>
   | CurrentGameNotFound
   | MakeMoveSuccess<M>
@@ -53,6 +56,18 @@ export const gameStarted = adt<
   }
 >('GameStarted')
 export type GameStarted = ReturnType<typeof gameStarted>
+
+export const startGameFailure = adt<
+  'StartGameFailure',
+  { reason: StartGameFailureReason }
+>('StartGameFailure')
+export type StartGameFailure = ReturnType<typeof startGameFailure>
+
+export type StartGameFailureReason = GameAlreadyExists
+export const gameAlreadyExists = adt<'GameAlreadyExists', { gameId: string }>(
+  'GameAlreadyExists',
+)
+export type GameAlreadyExists = ReturnType<typeof gameAlreadyExists>
 
 export const CurrentGameSuccessKind: 'CurrentGameSuccess' = 'CurrentGameSuccess'
 export type CurrentGameSuccess<T> = {
@@ -70,15 +85,18 @@ export function currentGameSuccess<T>(
   }
 }
 
-export const currentGameNotFound = adt<'CurrentGameNotFound', void>(
+export const currentGameNotFound = adt<
   'CurrentGameNotFound',
-)
+  { playerId: string }
+>('CurrentGameNotFound')
 export type CurrentGameNotFound = ReturnType<typeof currentGameNotFound>
 
 export const MakeMoveSuccessKind: 'MakeMoveSuccess' = 'MakeMoveSuccess'
 export type MakeMoveSuccess<T> = {
   kind: typeof MakeMoveSuccessKind
   value: {
+    gameId: string
+    playerId: string
     move: T
   }
 }
