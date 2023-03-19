@@ -1,6 +1,16 @@
 import { rejectWith, resolveWith } from '../../event/request_response.testutil'
 import { assertNever } from '../../fp/pattern_matching'
-import { GameRules, tie, unfinished, winner } from '../../game/game'
+import {
+  GameRules,
+  invalidMove,
+  madeMove,
+  MadeMoveKind,
+  moveEndedGame,
+  MoveEndedGameKind,
+  tie,
+  unfinished,
+  winner,
+} from '../../game/game'
 import {
   concedeGame,
   currentGame,
@@ -75,32 +85,35 @@ export function createGamesInMemory<S, M>(
         case MakeMoveKind: {
           const maybeGame = gamesById[i.value.gameId]
           if (maybeGame !== undefined) {
-            if (gameRules.isValidMove(maybeGame.state, i.value.move)) {
-              maybeGame.state = gameRules.onMove(maybeGame.state, i.value.move)
-              maybeGame.moves.push(i.value.move)
+            const result = gameRules.onMove(maybeGame.state, i.value.move)
 
-              const outcome = gameRules.getOutcome(maybeGame.state)
-              switch (outcome.kind) {
-                case tie.kind:
-                case winner.kind:
-                  return resolveWith(
-                    gameCompleted({
-                      game: gameDataWithoutState(maybeGame),
-                    }),
-                  )
-                case unfinished.kind:
-                  return resolveWith(
-                    makeMoveSuccess({
-                      gameId: maybeGame.gameId,
-                      playerId: i.value.playerId,
-                      move: i.value.move,
-                    }),
-                  )
-                default:
-                  assertNever(outcome)
-              }
-            } else {
-              return resolveWith(moveWasInvalid({ reason: '' }))
+            switch (result.kind) {
+              case MadeMoveKind:
+                maybeGame.state = result.value.state
+                maybeGame.moves.push(i.value.move)
+
+                return resolveWith(
+                  makeMoveSuccess({
+                    gameId: maybeGame.gameId,
+                    playerId: i.value.playerId,
+                    move: i.value.move,
+                  }),
+                )
+              case MoveEndedGameKind:
+                maybeGame.state = result.value.state
+                maybeGame.moves.push(i.value.move)
+
+                return resolveWith(
+                  gameCompleted({
+                    game: gameDataWithoutState(maybeGame),
+                  }),
+                )
+              case invalidMove.kind:
+                return resolveWith(
+                  moveWasInvalid({ reason: result.value.reason }),
+                )
+              default:
+                assertNever(result)
             }
           } else {
             return resolveWith(
@@ -147,7 +160,19 @@ function applyMoves<S, M>(
   gameRules: GameRules<S, M>,
   moves: Array<M>,
 ): S {
-  return moves.reduce((state, move) => gameRules.onMove(state, move), gameState)
+  return moves.reduce((state, move) => {
+    const result = gameRules.onMove(state, move)
+
+    switch (result.kind) {
+      case MadeMoveKind:
+      case MoveEndedGameKind:
+        return result.value.state
+      case invalidMove.kind:
+        return state
+      default:
+        assertNever(result)
+    }
+  }, gameState)
 }
 
 function gameDataWithoutState<S, M>(gameData: GameData<S, M>): GameHistory<M> {

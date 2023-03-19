@@ -3,7 +3,16 @@ import {
   RequestResponseTestCase,
   resolveWith,
 } from '../../event/request_response.testutil'
-import { GameRules, tie, unfinished, winner } from '../../game/game'
+import { assertNever } from '../../fp/pattern_matching'
+import {
+  GameRules,
+  invalidMove,
+  madeMove,
+  moveEndedGame,
+  tie,
+  unfinished,
+  winner,
+} from '../../game/game'
 import {
   concedeGame,
   currentGame,
@@ -102,7 +111,7 @@ describe('games inmemory', () => {
           playerId: player1Id,
           move: { tile: 0, owner: '1' },
         }),
-        Then: moveWasInvalid({ reason: '' }),
+        Then: moveWasInvalid({ reason: 'tile occupied' }),
       }),
     )
 
@@ -203,15 +212,27 @@ function ticTacToeRules(): GameRules<TestState, TestMove> {
     },
     onMove(s, m) {
       if (this.isValidMove(s, m)) {
-        return s.map((tile, index) => {
+        const nextState = s.map((tile, index) => {
           if (index === m.tile) {
             return m.owner
           } else {
             return tile
           }
         })
+
+        const outcome = this.getOutcome(nextState)
+
+        switch (outcome.kind) {
+          case tie.kind:
+          case winner.kind:
+            return moveEndedGame({ state: nextState })
+          case unfinished.kind:
+            return madeMove({ state: nextState })
+          default:
+            assertNever(outcome)
+        }
       } else {
-        return s
+        return invalidMove({ reason: 'tile occupied' })
       }
     },
     getOutcome(s) {
