@@ -27,7 +27,9 @@ export function createGameRulesTicTacToe(): TicTacToeRules {
       }
     },
     onMove(s, m) {
-      if (this.isValidMove(s, m)) {
+      if (s.playerTurn !== m.owner) {
+        return invalidMove({ reason: outOfTurnMessage(s.playerTurn, m.owner) })
+      } else if (this.isValidMove(s, m)) {
         const nextBoard = s.board.map((owner, index) => {
           if (index === m.tile) {
             return m.owner

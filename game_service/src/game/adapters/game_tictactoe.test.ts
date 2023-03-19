@@ -63,7 +63,7 @@ describe('tic tac toe rules', () => {
               undefined,
               '2',
             ],
-            playerTurn: '2',
+            playerTurn: '1',
           },
         }),
       )
